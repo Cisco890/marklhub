@@ -25,6 +25,9 @@ export function LoginPage() {
     setLoading(true);
     try {
       const res = await login(username.trim(), password);
+      if (!res || typeof res.token !== 'string' || !res.token) {
+        throw new Error('Respuesta inválida del servidor en /api/auth/login');
+      }
       setSession(res.token, res.user, res.mustChangePassword);
       navigate(res.mustChangePassword ? '/change-password' : from, { replace: true });
     } catch (err) {
