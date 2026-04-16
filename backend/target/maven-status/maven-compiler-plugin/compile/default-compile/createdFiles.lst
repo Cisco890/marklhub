@@ -9,6 +9,7 @@ com\markhub\entity\TeamMember.class
 com\markhub\service\AuthService.class
 com\markhub\entity\User.class
 com\markhub\service\TeamAccessService.class
+com\markhub\config\RailwayPostgresUrlEnvironmentPostProcessor.class
 com\markhub\config\SecurityConfig.class
 com\markhub\entity\MarkdownFile.class
 com\markhub\entity\Role.class

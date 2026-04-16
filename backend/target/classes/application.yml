@@ -2,8 +2,8 @@ spring:
   application:
     name: markhub-backend
   datasource:
-    # Use a JDBC URL (jdbc:postgresql://host:port/db), not postgresql:// — e.g. on Railway with internal host:
-    # jdbc:postgresql://postgres.railway.internal:5432/railway
+    # Railway: add DATABASE_URL from the Postgres service (postgresql://... is converted at startup).
+    # Or set jdbc:postgresql://host:port/db plus DATABASE_USERNAME / DATABASE_PASSWORD yourself.
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/markhub}
     username: ${DATABASE_USERNAME:markhub}
     password: ${DATABASE_PASSWORD:markhub}
