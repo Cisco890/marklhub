@@ -27,8 +27,15 @@ export function LoginPage() {
       const res = await login(username.trim(), password);
       setSession(res.token, res.user, res.mustChangePassword);
       navigate(res.mustChangePassword ? '/change-password' : from, { replace: true });
-    } catch {
-      setError('Credenciales inválidas');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '';
+      if (!message || message === 'Failed to fetch') {
+        setError('No se pudo conectar con el servidor');
+      } else if (message.toLowerCase().includes('invalid credentials')) {
+        setError('Credenciales inválidas');
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
     }
