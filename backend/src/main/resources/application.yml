@@ -2,6 +2,8 @@ spring:
   application:
     name: markhub-backend
   datasource:
+    # Use a JDBC URL (jdbc:postgresql://host:port/db), not postgresql:// — e.g. on Railway with internal host:
+    # jdbc:postgresql://postgres.railway.internal:5432/railway
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/markhub}
     username: ${DATABASE_USERNAME:markhub}
     password: ${DATABASE_PASSWORD:markhub}
@@ -24,6 +26,9 @@ server:
       max-request-size: 2MB
 
 markhub:
+  cors:
+    # Comma-separated origin patterns for browsers (e.g. https://your-frontend.up.railway.app). Local dev defaults are always allowed.
+    additional-allowed-origin-patterns: ${MARKHUB_CORS_ORIGINS:}
   jwt:
     secret: ${JWT_SECRET:dev-secret-change-me-use-long-random-string-in-production-min-256-bits}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}

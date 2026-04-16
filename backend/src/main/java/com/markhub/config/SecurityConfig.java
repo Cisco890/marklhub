@@ -3,7 +3,7 @@ package com.markhub.config;
 import com.markhub.security.JwtAuthenticationFilter;
 import com.markhub.security.MustChangePasswordFilter;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,17 +21,30 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final MustChangePasswordFilter mustChangePasswordFilter;
     private final RestAuthenticationEntryPoint authenticationEntryPoint;
+    private final String additionalCorsOriginPatterns;
+
+    public SecurityConfig(
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            MustChangePasswordFilter mustChangePasswordFilter,
+            RestAuthenticationEntryPoint authenticationEntryPoint,
+            @Value("${markhub.cors.additional-allowed-origin-patterns:}") String additionalCorsOriginPatterns) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.mustChangePasswordFilter = mustChangePasswordFilter;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.additionalCorsOriginPatterns = additionalCorsOriginPatterns;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -61,10 +74,17 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of(
+        List<String> patterns = new ArrayList<>(List.of(
                 "http://localhost:5173",
                 "http://127.0.0.1:5173"
         ));
+        if (additionalCorsOriginPatterns != null && !additionalCorsOriginPatterns.isBlank()) {
+            Arrays.stream(additionalCorsOriginPatterns.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .forEach(patterns::add);
+        }
+        config.setAllowedOriginPatterns(patterns);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
